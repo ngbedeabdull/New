@@ -3,7 +3,7 @@ import QRCode from "react-qr-code";
 const QRCodeGenerator = () => {
   const totalTables = 20;
 
-  const baseUrl = `${window.location.origin}/checkout`;
+  const baseUrl = `${window.location.origin}/menu`;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
