@@ -163,6 +163,12 @@ const categories = [
 const Menu = ({ cart, setCart }) => {
   const [searchParams] = useSearchParams();
   const tableNumber = searchParams.get("table");
+
+  useEffect(() => {
+    if (tableNumber) {
+      localStorage.setItem("tableNumber", tableNumber);
+    }
+  }, [tableNumber]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [addedId, setAddedId] = useState(null);

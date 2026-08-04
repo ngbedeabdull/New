@@ -15,7 +15,10 @@ const Checkout = ({ cart, setCart }) => {
   const [customer, setCustomer] = useState({
     name: "",
     phone: "",
-    tableNumber: searchParams.get("table") || "",
+  tableNumber:
+  searchParams.get("table") ||
+  localStorage.getItem("tableNumber") ||
+  "",
     instruction: "",
   });
 
