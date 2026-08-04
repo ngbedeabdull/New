@@ -12,13 +12,15 @@ const Checkout = ({ cart, setCart }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Read table from QR or localStorage
+  const savedTable =
+    searchParams.get("table") ||
+    localStorage.getItem("tableNumber");
+
   const [customer, setCustomer] = useState({
     name: "",
     phone: "",
-  tableNumber:
-  searchParams.get("table") ||
-  localStorage.getItem("tableNumber") ||
-  "",
+    tableNumber: savedTable || "",
     instruction: "",
   });
 
@@ -56,18 +58,12 @@ const Checkout = ({ cart, setCart }) => {
         phone: customer.phone,
         tableNumber: customer.tableNumber,
         instruction: customer.instruction,
-
         items: cart,
-
         total: totalPrice,
-
         status: "Pending",
-
         paymentStatus: "Unpaid",
         paymentMethod: "",
-
         waiter: "",
-
         createdAt: new Date(),
       });
 
@@ -94,6 +90,9 @@ const Checkout = ({ cart, setCart }) => {
 
       // Empty Cart
       setCart([]);
+
+      // Clear saved table
+      localStorage.removeItem("tableNumber");
 
       // Go to Order Status
       navigate("/order-status");
@@ -149,11 +148,12 @@ const Checkout = ({ cart, setCart }) => {
           value={customer.tableNumber}
           onChange={handleChange}
           placeholder="Enter your table number"
-          readOnly={!!searchParams.get("table")}
-          className={`w-full border rounded-lg px-4 py-3 mb-6 ${searchParams.get("table")
+          readOnly={!!savedTable}
+          className={`w-full border rounded-lg px-4 py-3 mb-6 ${
+            savedTable
               ? "bg-gray-100 cursor-not-allowed"
               : ""
-            }`}
+          }`}
         />
 
         <label className="block font-semibold mb-2">
@@ -201,10 +201,11 @@ const Checkout = ({ cart, setCart }) => {
         <button
           onClick={placeOrder}
           disabled={cart.length === 0}
-          className={`w-full mt-6 py-3 rounded-lg text-xl font-bold transition ${cart.length === 0
+          className={`w-full mt-6 py-3 rounded-lg text-xl font-bold transition ${
+            cart.length === 0
               ? "bg-gray-400 cursor-not-allowed text-white"
               : "bg-green-600 hover:bg-green-700 text-white"
-            }`}
+          }`}
         >
           Place Order
         </button>
