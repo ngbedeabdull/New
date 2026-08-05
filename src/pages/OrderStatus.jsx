@@ -40,7 +40,11 @@ const OrderStatus = () => {
     "Delivered",
   ];
 
-  const currentStep = steps.indexOf(order.status);
+  const normalizedStatus = (order.status || "").toLowerCase().trim();
+
+  const currentStep = steps.findIndex(
+    (step) => step.toLowerCase() === normalizedStatus
+  );
 
   return (
     <section className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
@@ -90,21 +94,19 @@ const OrderStatus = () => {
                   <div className="flex flex-col items-center">
 
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 ${
-                        index <= currentStep
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 ${index <= currentStep
                           ? "bg-green-600"
                           : "bg-gray-300"
-                      }`}
+                        }`}
                     >
                       {index + 1}
                     </div>
 
                     <p
-                      className={`mt-3 text-sm text-center ${
-                        index <= currentStep
+                      className={`mt-3 text-sm text-center ${index <= currentStep
                           ? "text-green-600 font-bold"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
                       {step}
                     </p>
@@ -114,11 +116,10 @@ const OrderStatus = () => {
                   {index !== steps.length - 1 && (
 
                     <div
-                      className={`flex-1 h-1 mx-2 rounded-full ${
-                        index < currentStep
+                      className={`flex-1 h-1 mx-2 rounded-full ${index < currentStep
                           ? "bg-green-600"
                           : "bg-gray-300"
-                      }`}
+                        }`}
                     ></div>
 
                   )}
@@ -140,17 +141,16 @@ const OrderStatus = () => {
             </h2>
 
             <div
-              className={`text-center py-4 rounded-xl text-white text-2xl font-bold ${
-                order.status === "Pending"
+              className={`text-center py-4 rounded-xl text-white text-2xl font-bold ${order.status === "Pending"
                   ? "bg-orange-500"
                   : order.status === "Preparing"
-                  ? "bg-blue-600"
-                  : order.status === "Ready"
-                  ? "bg-green-500"
-                  : order.status === "On The Way"
-                  ? "bg-purple-600"
-                  : "bg-green-700"
-              }`}
+                    ? "bg-blue-600"
+                    : order.status === "Ready"
+                      ? "bg-green-500"
+                      : order.status === "On The Way"
+                        ? "bg-purple-600"
+                        : "bg-green-700"
+                }`}
             >
               {order.status}
             </div>

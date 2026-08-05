@@ -41,18 +41,18 @@ const OrderManagement = () => {
         const order = orderSnap.data();
 
         // Free the table before deleting the order
-        const tableNumber = Number(order.tableNumber);
+       const tableNumber = Number(order.tableNumber);
 
-        if (tableNumber >= 1 && tableNumber <= 20) {
-          const tableRef = doc(db, "tables", `table${tableNumber}`);
-          const tableSnap = await getDoc(tableRef);
+if (tableNumber >= 1 && tableNumber <= 20) {
+  const tableRef = doc(db, "tables", `table${tableNumber}`);
+  const tableSnap = await getDoc(tableRef);
 
-          if (tableSnap.exists()) {
-            await updateDoc(tableRef, {
-              status: "Available",
-            });
-          }
-        }
+  if (tableSnap.exists()) {
+    await updateDoc(tableRef, {
+      status: "Available",
+    });
+  }
+}
       }
 
       // Delete the order
