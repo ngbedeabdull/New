@@ -40,18 +40,20 @@ const OrderStatus = () => {
     "Delivered",
   ];
 
-  const normalizedStatus = (order.status || "").toLowerCase().trim();
+  const normalizedStatus = (order.status || "")
+    .toLowerCase()
+    .trim();
 
   const currentStep = steps.findIndex(
     (step) => step.toLowerCase() === normalizedStatus
   );
 
   return (
-    <section className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+    <section className="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-6">
 
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full">
+      <div className="bg-white rounded-2xl shadow-xl p-5 md:p-8 w-full max-w-4xl">
 
-        <h1 className="text-4xl font-bold text-red-600 text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-red-600 text-center mb-8">
           🍽️ Order Status
         </h1>
 
@@ -74,40 +76,58 @@ const OrderStatus = () => {
             {Number(order.total).toLocaleString()}
           </p>
 
-          {/* Progress Tracker */}
+          {/* Progress */}
 
           <div className="mt-10">
 
-            <h2 className="text-2xl font-bold mb-8 text-center">
+            <h2 className="text-2xl font-bold text-center mb-8">
               Order Progress
             </h2>
 
-            <div className="grid grid-cols-5 gap-2 w-full items-start">
+            <div className="flex items-start justify-between w-full">
 
               {steps.map((step, index) => (
 
                 <div
                   key={step}
-                  className="flex flex-col items-center"
+                  className="flex items-center flex-1"
                 >
 
-                  <div
-                    className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 ${index <= currentStep
-                        ? "bg-green-600"
-                        : "bg-gray-300"
+                  <div className="flex flex-col items-center w-full">
+
+                    <div
+                      className={`w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-white font-bold text-base md:text-xl transition-all ${
+                        index <= currentStep
+                          ? "bg-green-600"
+                          : "bg-gray-300"
                       }`}
-                  >
-                    {index + 1}
+                    >
+                      {index + 1}
+                    </div>
+
+                    <p
+                      className={`mt-2 text-[10px] md:text-sm text-center leading-tight ${
+                        index <= currentStep
+                          ? "text-green-600 font-bold"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {step}
+                    </p>
+
                   </div>
 
-                  <p
-                    className={`mt-2 text-[11px] md:text-sm text-center leading-tight ${index <= currentStep
-                        ? "text-green-600 font-bold"
-                        : "text-gray-500"
+                  {index !== steps.length - 1 && (
+
+                    <div
+                      className={`flex-1 h-1 mx-1 md:mx-2 rounded-full ${
+                        index < currentStep
+                          ? "bg-green-600"
+                          : "bg-gray-300"
                       }`}
-                  >
-                    {step}
-                  </p>
+                    />
+
+                  )}
 
                 </div>
 
@@ -121,28 +141,27 @@ const OrderStatus = () => {
 
           <div className="mt-10">
 
-            <h2 className="font-bold text-xl text-center mb-4">
+            <h2 className="text-xl font-bold text-center mb-4">
               Current Status
             </h2>
 
             <div
-              className={`text-center py-4 rounded-xl text-white text-2xl font-bold ${order.status === "Pending"
-                ? "bg-orange-500"
-                : order.status === "Preparing"
+              className={`text-center py-4 rounded-xl text-white text-xl md:text-2xl font-bold ${
+                order.status === "Pending"
+                  ? "bg-orange-500"
+                  : order.status === "Preparing"
                   ? "bg-blue-600"
                   : order.status === "Ready"
-                    ? "bg-green-500"
-                    : order.status === "On The Way"
-                      ? "bg-purple-600"
-                      : "bg-green-700"
-                }`}
+                  ? "bg-green-500"
+                  : order.status === "On The Way"
+                  ? "bg-purple-600"
+                  : "bg-green-700"
+              }`}
             >
               {order.status}
             </div>
 
           </div>
-
-          {/* Delivered Message */}
 
           {order.status === "Delivered" && (
 
