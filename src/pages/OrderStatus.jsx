@@ -82,47 +82,32 @@ const OrderStatus = () => {
               Order Progress
             </h2>
 
-            <div className="flex items-center justify-between">
+            <div className="grid grid-cols-5 gap-2 w-full items-start">
 
               {steps.map((step, index) => (
 
                 <div
                   key={step}
-                  className="flex items-center flex-1"
+                  className="flex flex-col items-center"
                 >
 
-                  <div className="flex flex-col items-center">
-
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 ${index <= currentStep
-                          ? "bg-green-600"
-                          : "bg-gray-300"
-                        }`}
-                    >
-                      {index + 1}
-                    </div>
-
-                    <p
-                      className={`mt-3 text-sm text-center ${index <= currentStep
-                          ? "text-green-600 font-bold"
-                          : "text-gray-500"
-                        }`}
-                    >
-                      {step}
-                    </p>
-
+                  <div
+                    className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold transition-all duration-300 ${index <= currentStep
+                        ? "bg-green-600"
+                        : "bg-gray-300"
+                      }`}
+                  >
+                    {index + 1}
                   </div>
 
-                  {index !== steps.length - 1 && (
-
-                    <div
-                      className={`flex-1 h-1 mx-2 rounded-full ${index < currentStep
-                          ? "bg-green-600"
-                          : "bg-gray-300"
-                        }`}
-                    ></div>
-
-                  )}
+                  <p
+                    className={`mt-2 text-[11px] md:text-sm text-center leading-tight ${index <= currentStep
+                        ? "text-green-600 font-bold"
+                        : "text-gray-500"
+                      }`}
+                  >
+                    {step}
+                  </p>
 
                 </div>
 
@@ -142,14 +127,14 @@ const OrderStatus = () => {
 
             <div
               className={`text-center py-4 rounded-xl text-white text-2xl font-bold ${order.status === "Pending"
-                  ? "bg-orange-500"
-                  : order.status === "Preparing"
-                    ? "bg-blue-600"
-                    : order.status === "Ready"
-                      ? "bg-green-500"
-                      : order.status === "On The Way"
-                        ? "bg-purple-600"
-                        : "bg-green-700"
+                ? "bg-orange-500"
+                : order.status === "Preparing"
+                  ? "bg-blue-600"
+                  : order.status === "Ready"
+                    ? "bg-green-500"
+                    : order.status === "On The Way"
+                      ? "bg-purple-600"
+                      : "bg-green-700"
                 }`}
             >
               {order.status}
