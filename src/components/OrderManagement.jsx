@@ -163,7 +163,7 @@ if (tableNumber >= 1 && tableNumber <= 20) {
                       <option value="Pending">Pending</option>
                       <option value="Preparing">Preparing</option>
                       <option value="Ready">Ready</option>
-                      <option value="On the Way">On the Way</option>
+                      <option value="On The Way">On The Way</option>
                       <option value="Delivered">Delivered</option>
                     </select>
                   </td>
