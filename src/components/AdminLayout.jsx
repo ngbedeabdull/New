@@ -29,6 +29,7 @@ const AdminLayout = () => {
     { title: "Staff", icon: "👥", path: "/admin/staff" },
     { title: "Inventory", icon: "📦", path: "/admin/inventory" },
     { title: "Sales", icon: "📊", path: "/admin/sales" },
+    { title: "QR Codes", icon: "📱", path: "/qr-codes" },
     { title: "Kitchen", icon: "👨‍🍳", path: "/kitchen" },
   ];
 
