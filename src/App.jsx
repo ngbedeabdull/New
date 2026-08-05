@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminLayout from "./components/AdminLayout";
 
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
@@ -33,9 +34,6 @@ import SalesDashboard from "./pages/SalesDashboard";
 import Inventory from "./pages/Inventory";
 import AddInventory from "./pages/AddInventory";
 import QRCodeGenerator from "./pages/QRCodeGenerator";
-
-
-
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -91,61 +89,61 @@ function App() {
             element={<AdminLogin />}
           />
 
-          {/* Admin Routes */}
+          {/* Admin Layout */}
 
           <Route
-            path="/admin/dashboard"
+            path="/admin"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminDashboard />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route
+              path="dashboard"
+              element={<AdminDashboard />}
+            />
 
-          <Route
-            path="/admin/foods"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <FoodManagement />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="foods"
+              element={<FoodManagement />}
+            />
 
-          <Route
-            path="/admin/orders"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <OrderManagement />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="orders"
+              element={<OrderManagement />}
+            />
 
-          <Route
-            path="/admin/tables"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <TableManagement />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="tables"
+              element={<TableManagement />}
+            />
 
-          <Route
-            path="/admin/reservations"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <ReservationManagement />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="reservations"
+              element={<ReservationManagement />}
+            />
 
-          <Route
-            path="/admin/staff"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <StaffManagement />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="staff"
+              element={<StaffManagement />}
+            />
+
+            <Route
+              path="sales"
+              element={<SalesDashboard />}
+            />
+
+            <Route
+              path="inventory"
+              element={<Inventory />}
+            />
+
+            <Route
+              path="inventory/add"
+              element={<AddInventory />}
+            />
+          </Route>
 
           {/* Kitchen */}
 
@@ -169,12 +167,7 @@ function App() {
             }
           />
 
-          {/* Utility */}
-
-          <Route
-            path="/create-tables"
-            element={<CreateTables />}
-          />
+          {/* Cashier */}
 
           <Route
             path="/cashier"
@@ -183,6 +176,13 @@ function App() {
                 <CashierDashboard />
               </ProtectedRoute>
             }
+          />
+
+          {/* Utility */}
+
+          <Route
+            path="/create-tables"
+            element={<CreateTables />}
           />
 
           <Route
@@ -197,33 +197,6 @@ function App() {
           <Route
             path="/receipt/:id"
             element={<Receipt />}
-          />
-
-          <Route
-            path="/admin/sales"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <SalesDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/inventory"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Inventory />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/inventory/add"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AddInventory />
-              </ProtectedRoute>
-            }
           />
 
           <Route
