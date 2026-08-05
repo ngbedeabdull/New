@@ -12,84 +12,97 @@ import {
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
 
- useEffect(() => {
-  const unsubscribe = onSnapshot(
-    collection(db, "orders"),
-    (snapshot) => {
-      const orderList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "orders"),
+      (snapshot) => {
+        const orderList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      setOrders(orderList);
-    }
-  );
+        setOrders(orderList);
+      }
+    );
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
 
- const deleteOrder = async (id) => {
-  if (!window.confirm("Delete this order?")) return;
+  const deleteOrder = async (id) => {
+    if (!window.confirm("Delete this order?")) return;
 
-  try {
-    // Get the order first
-    const orderRef = doc(db, "orders", id);
-    const orderSnap = await getDoc(orderRef);
-
-    if (orderSnap.exists()) {
-      const order = orderSnap.data();
-
-      // Free the table before deleting the order
-      await updateDoc(
-        doc(db, "tables", `table${order.tableNumber}`),
-        {
-          status: "Available",
-        }
-      );
-    }
-
-    // Delete the order
-    await deleteDoc(orderRef);
-
-    alert("Order deleted successfully.");
-  } catch (error) {
-    console.log(error);
-    alert(error.message);
-  }
-};
-
- const updateStatus = async (id, status) => {
-  try {
-    // Update the order status
-    await updateDoc(doc(db, "orders", id), {
-      status,
-    });
-
-    // If the order is delivered, free the table
-    if (status === "Delivered") {
+    try {
+      // Get the order first
       const orderRef = doc(db, "orders", id);
       const orderSnap = await getDoc(orderRef);
 
       if (orderSnap.exists()) {
         const order = orderSnap.data();
 
-        await updateDoc(
-          doc(db, "tables", `table${order.tableNumber}`),
-          {
-            status: "Available",
+        // Free the table before deleting the order
+        const tableNumber = Number(order.tableNumber);
+
+        if (tableNumber >= 1 && tableNumber <= 20) {
+          const tableRef = doc(db, "tables", `table${tableNumber}`);
+          const tableSnap = await getDoc(tableRef);
+
+          if (tableSnap.exists()) {
+            await updateDoc(tableRef, {
+              status: "Available",
+            });
           }
-        );
+        }
       }
+
+      // Delete the order
+      await deleteDoc(orderRef);
+
+      alert("Order deleted successfully.");
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
     }
+  };
 
-    alert("Order status updated!");
+  const updateStatus = async (id, status) => {
+    try {
+      // Update the order status
+      await updateDoc(doc(db, "orders", id), {
+        status,
+      });
 
-  } catch (error) {
-    console.log(error);
-    alert(error.message);
-  }
-};
+      // If the order is delivered, free the table
+      if (status === "Delivered") {
+        const orderRef = doc(db, "orders", id);
+        const orderSnap = await getDoc(orderRef);
+
+        if (orderSnap.exists()) {
+          const order = orderSnap.data();
+
+          const tableNumber = Number(order.tableNumber);
+
+          // Only free valid tables (1-20)
+          if (tableNumber >= 1 && tableNumber <= 20) {
+            const tableRef = doc(db, "tables", `table${tableNumber}`);
+
+            const tableSnap = await getDoc(tableRef);
+
+            if (tableSnap.exists()) {
+              await updateDoc(tableRef, {
+                status: "Available",
+              });
+            }
+          }
+        }
+      }
+      alert("Order status updated!");
+
+    } catch (error) {
+      console.log(error);
+      alert(error.message);
+    }
+  };
 
   return (
     <section className="min-h-screen bg-gray-100 p-10">
@@ -117,7 +130,7 @@ const OrderManagement = () => {
 
           <tbody>
 
-          {orders.length > 0 ? (
+            {orders.length > 0 ? (
               orders.map((order) => (
                 <tr
                   key={order.id}
