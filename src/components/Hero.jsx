@@ -21,7 +21,7 @@ const Hero = () => {
         setCurrentImage(nextImage);
         setNextImage((nextImage + 1) % heroImages.length);
         setFadeIn(false);
-      }, 1000); // Match the transition duration
+      }, 1000);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -53,6 +53,7 @@ const Hero = () => {
 
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+
         <h1 className="text-5xl md:text-7xl font-bold">
           🍽️ MJ Restaurant
         </h1>
@@ -61,12 +62,25 @@ const Hero = () => {
           Delicious Meals • Fast Service • Easy Ordering
         </p>
 
-        <Link
-          to="/menu"
-          className="mt-8 bg-red-600 hover:bg-red-700 px-8 py-3 rounded-full text-lg font-semibold transition"
-        >
-          View Menu
-        </Link>
+        {/* Buttons */}
+        <div className="mt-8 flex flex-col md:flex-row gap-4">
+
+          <Link
+            to="/menu"
+            className="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-full text-lg font-semibold transition text-center"
+          >
+            🍴 View Menu
+          </Link>
+
+          <Link
+            to="/order-status"
+            className="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-full text-lg font-semibold transition text-center"
+          >
+            📦 Track My Order
+          </Link>
+
+        </div>
+
       </div>
 
       {/* Navigation Dots */}

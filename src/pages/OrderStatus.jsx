@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { doc, onSnapshot } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 const OrderStatus = () => {
   const [order, setOrder] = useState(null);
@@ -14,7 +15,14 @@ const OrderStatus = () => {
       doc(db, "orders", orderId),
       (docSnap) => {
         if (docSnap.exists()) {
-          setOrder(docSnap.data());
+          const orderData = docSnap.data();
+
+          setOrder(orderData);
+
+          // Automatically clear saved order after delivery
+          if (orderData.status === "Delivered") {
+            localStorage.removeItem("orderId");
+          }
         }
       }
     );
@@ -22,13 +30,31 @@ const OrderStatus = () => {
     return () => unsubscribe();
   }, []);
 
+  // No active order
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h2 className="text-2xl font-bold">
-          No active order found.
-        </h2>
-      </div>
+      <section className="min-h-screen flex items-center justify-center bg-gray-100 px-6">
+        <div className="bg-white shadow-xl rounded-2xl p-10 text-center max-w-md w-full">
+
+          <h1 className="text-5xl mb-4">📦</h1>
+
+          <h2 className="text-3xl font-bold text-gray-800">
+            No Active Order
+          </h2>
+
+          <p className="text-gray-500 mt-4">
+            You don't have any active order yet.
+          </p>
+
+          <Link
+            to="/menu"
+            className="inline-block mt-8 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold"
+          >
+            🍴 Order Food
+          </Link>
+
+        </div>
+      </section>
     );
   }
 
@@ -75,8 +101,6 @@ const OrderStatus = () => {
             <strong>Total:</strong> ₦
             {Number(order.total).toLocaleString()}
           </p>
-
-          {/* Progress */}
 
           <div className="mt-10">
 
@@ -126,7 +150,6 @@ const OrderStatus = () => {
                           : "bg-gray-300"
                       }`}
                     />
-
                   )}
 
                 </div>
@@ -163,6 +186,8 @@ const OrderStatus = () => {
 
           </div>
 
+          {/* Delivered Message */}
+
           {order.status === "Delivered" && (
 
             <div className="mt-10 bg-green-100 border border-green-500 rounded-xl p-6 text-center">
@@ -178,6 +203,13 @@ const OrderStatus = () => {
               <p className="text-gray-700">
                 We hope you enjoyed your meal ❤️
               </p>
+
+              <Link
+                to="/menu"
+                className="inline-block mt-6 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold"
+              >
+                🍴 Order Again
+              </Link>
 
             </div>
 
