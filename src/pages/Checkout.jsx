@@ -6,20 +6,25 @@ import {
   addDoc,
   doc,
   updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
+
+import {
+  saveCart,
+  deleteCart,
+} from "../services/cartService";
 
 const Checkout = ({ cart, setCart }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Read table from QR or localStorage
   const savedTable =
     searchParams.get("table") ||
     localStorage.getItem("tableNumber");
 
   const [customer, setCustomer] = useState({
-    name: "",
-    phone: "",
+    name: localStorage.getItem("customerName") || "",
+    phone: localStorage.getItem("customerPhone") || "",
     tableNumber: savedTable || "",
     instruction: "",
   });
@@ -52,27 +57,56 @@ const Checkout = ({ cart, setCart }) => {
     }
 
     try {
-      // Save Order
-      const docRef = await addDoc(collection(db, "orders"), {
-        customerName: customer.name,
-        phone: customer.phone,
-        tableNumber: customer.tableNumber,
-        instruction: customer.instruction,
-        items: cart,
-        total: totalPrice,
-        status: "Pending",
-        paymentStatus: "Unpaid",
-        paymentMethod: "",
-        waiter: "",
-        createdAt: new Date(),
-      });
+      localStorage.setItem(
+        "customerName",
+        customer.name
+      );
 
-      // Save Order ID
-      localStorage.setItem("orderId", docRef.id);
+      localStorage.setItem(
+        "customerPhone",
+        customer.phone
+      );
 
-      // Mark Table as Occupied
+      localStorage.setItem(
+        "tableNumber",
+        customer.tableNumber
+      );
+
+      await saveCart(
+        customer.phone,
+        customer.name,
+        customer.tableNumber,
+        cart
+      );
+
+      const docRef = await addDoc(
+        collection(db, "orders"),
+        {
+          customerName: customer.name,
+          phone: customer.phone,
+          tableNumber: customer.tableNumber,
+          instruction: customer.instruction,
+          items: cart,
+          total: totalPrice,
+          status: "Pending",
+          paymentStatus: "Unpaid",
+          paymentMethod: "",
+          waiter: "",
+          createdAt: serverTimestamp(),
+        }
+      );
+
+      localStorage.setItem(
+        "orderId",
+        docRef.id
+      );
+
       await updateDoc(
-        doc(db, "tables", `table${customer.tableNumber}`),
+        doc(
+          db,
+          "tables",
+          `table${customer.tableNumber}`
+        ),
         {
           status: "Occupied",
         }
@@ -80,21 +114,12 @@ const Checkout = ({ cart, setCart }) => {
 
       alert("Order placed successfully!");
 
-      // Reset Form
-      setCustomer({
-        name: "",
-        phone: "",
-        tableNumber: "",
-        instruction: "",
-      });
+      await deleteCart(customer.phone);
 
-      // Empty Cart
       setCart([]);
 
-      // Clear saved table
-      localStorage.removeItem("tableNumber");
+      localStorage.removeItem("cart");
 
-      // Go to Order Status
       navigate("/order-status");
 
     } catch (error) {
@@ -104,6 +129,7 @@ const Checkout = ({ cart, setCart }) => {
   };
 
   return (
+
     <div className="max-w-4xl mx-auto p-6">
 
       <h1 className="text-4xl font-bold text-center text-red-600 mb-8">

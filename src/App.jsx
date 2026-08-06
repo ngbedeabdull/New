@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -35,8 +35,33 @@ import Inventory from "./pages/Inventory";
 import AddInventory from "./pages/AddInventory";
 import QRCodeGenerator from "./pages/QRCodeGenerator";
 
+import { loadCart } from "./services/cartService";
+
 function App() {
   const [cart, setCart] = useState([]);
+
+  // Restore cart automatically from Firestore
+  useEffect(() => {
+    const restoreCart = async () => {
+      const phone = localStorage.getItem("customerPhone");
+
+      if (!phone) return;
+
+      try {
+        const savedCart = await loadCart(phone);
+
+        if (savedCart?.items && savedCart.items.length > 0) {
+          setCart(savedCart.items);
+        } else {
+          setCart([]);
+        }
+      } catch (error) {
+        console.error("Failed to restore cart:", error);
+      }
+    };
+
+    restoreCart();
+  }, []);
 
   return (
     <>

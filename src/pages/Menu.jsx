@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { saveCart } from "../services/cartService";
 
 const foods = [
   {
@@ -162,6 +163,7 @@ const categories = [
 
 const Menu = ({ cart, setCart }) => {
   const [searchParams] = useSearchParams();
+
   const tableNumber = searchParams.get("table");
 
   useEffect(() => {
@@ -169,32 +171,66 @@ const Menu = ({ cart, setCart }) => {
       localStorage.setItem("tableNumber", tableNumber);
     }
   }, [tableNumber]);
+
+  const customerPhone = localStorage.getItem("customerPhone");
+  const customerName = localStorage.getItem("customerName");
+  const savedTable = localStorage.getItem("tableNumber");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [addedId, setAddedId] = useState(null);
-
   const [selectedFood, setSelectedFood] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const openFood = (food) => {
     setSelectedFood(food);
     setShowModal(true);
-  }
+  };
 
-  const addToCart = (food) => {
+  const addToCart = async (food) => {
+    let updatedCart = [];
 
-    const existingItem = cart.find((item) => item.id === food.id);
+    const existingItem = cart.find(
+      (item) => item.id === food.id
+    );
 
     if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.id === food.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+      updatedCart = cart.map((item) =>
+        item.id === food.id
+          ? {
+            ...item,
+            quantity: item.quantity + 1,
+          }
+          : item
       );
     } else {
-      setCart([...cart, { ...food, quantity: 1 }]);
+      updatedCart = [
+        ...cart,
+        {
+          ...food,
+          quantity: 1,
+        },
+      ];
+    }
+
+    setCart(updatedCart);
+
+    // Save cart to Firestore
+    if (
+      customerPhone &&
+      customerName &&
+      savedTable
+    ) {
+      try {
+        await saveCart(
+          customerPhone,
+          customerName,
+          savedTable,
+          updatedCart
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     setAddedId(food.id);
@@ -217,6 +253,7 @@ const Menu = ({ cart, setCart }) => {
   });
 
   return (
+
     <div className="w-full px-6 md:px-10 lg:px-16 py-8">
 
       <h1 className="text-4xl font-bold text-center text-red-600 mb-8">
@@ -237,8 +274,8 @@ const Menu = ({ cart, setCart }) => {
             key={category.name}
             onClick={() => setSelectedCategory(category.name)}
             className={`flex flex-col items-center justify-center min-w-[90px] px-4 py-3 rounded-2xl transition ${selectedCategory === category.name
-              ? "bg-red-600 text-white shadow-xl"
-              : "bg-white shadow-md hover:shadow-xl"
+                ? "bg-red-600 text-white shadow-xl"
+                : "bg-white shadow-md hover:shadow-xl"
               }`}
           >
             <span className="text-3xl">{category.icon}</span>
@@ -285,8 +322,8 @@ const Menu = ({ cart, setCart }) => {
                     addToCart(food);
                   }}
                   className={`w-full py-3 rounded-lg text-white font-bold transition ${addedId === food.id
-                    ? "bg-green-600"
-                    : "bg-red-600 hover:bg-red-700"
+                      ? "bg-green-600"
+                      : "bg-red-600 hover:bg-red-700"
                     }`}
                 >
                   {addedId === food.id
@@ -309,12 +346,12 @@ const Menu = ({ cart, setCart }) => {
           </div>
         )}
       </div>
+
       {showModal && selectedFood && (
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
           onClick={() => setShowModal(false)}
         >
-
           <div
             className="bg-white rounded-3xl overflow-hidden max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
@@ -338,6 +375,7 @@ const Menu = ({ cart, setCart }) => {
 
               <div className="flex justify-between mt-5">
 
+
                 <span className="text-green-600 text-2xl font-bold">
                   ₦{selectedFood.price.toLocaleString()}
                 </span>
@@ -359,7 +397,9 @@ const Menu = ({ cart, setCart }) => {
                 }}
                 className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold"
               >
-                Add to Cart
+                {addedId === selectedFood.id
+                  ? "✔ Added"
+                  : "Add to Cart"}
               </button>
 
               <button
@@ -375,6 +415,7 @@ const Menu = ({ cart, setCart }) => {
 
         </div>
       )}
+
     </div>
   );
 };
